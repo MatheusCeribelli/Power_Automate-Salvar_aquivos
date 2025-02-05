@@ -1,0 +1,19 @@
+Folder.GetFiles Folder: $'''Y:\\++ Matheus Ceribelli\\DP\\%Ano%\\%Mês%\\Doméstica''' FileFilter: $'''*.pdf''' IncludeSubfolders: False FailOnAccessDenied: True SortBy1: Folder.SortBy.NoSort SortDescending1: False SortBy2: Folder.SortBy.NoSort SortDescending2: False SortBy3: Folder.SortBy.NoSort SortDescending3: False Files=> Pasta_PDF
+LOOP FOREACH Arquivo_PDF IN Pasta_PDF
+    Text.SplitText.SplitWithDelimiter Text: Arquivo_PDF CustomDelimiter: $'''(?<=[A-z]\\\\)(\\D*)(?=\\s\\d{2}.\\d{4})''' IsRegEx: True Result=> Texto_PDF
+    Text.ParseText.RegexParseForFirstOccurrence Text: Arquivo_PDF TextToFind: $'''(?<=.*-\\s*)(\\d+)(?=.pdf)''' StartingPosition: 0 IgnoreCase: False Match=> NUM
+    IF Contains(Texto_PDF, $'''Extrato Mensal''', True) THEN
+        CALL 'D Folha de Pagamento'
+    END
+    IF Contains(Texto_PDF, $'''Recibo de Pagamento''', True) THEN
+        CALL 'D Folha de Pagamento'
+    END
+    IF Contains(Texto_PDF, $'''Dae''', True) THEN
+        CALL 'D Folha de Pagamento'
+    END
+    IF Contains(Texto_PDF, $'''Holerite Mensal''', True) THEN
+        CALL 'D Folha de Pagamento'
+    END
+    Variables.AddItemToList Item: Erros List: ListaErros
+    Variables.ClearList List: Erros
+END
