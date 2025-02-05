@@ -1,0 +1,7 @@
+BLOCK 
+ON BLOCK ERROR all
+
+END
+    File.Move Files: Arquivo_PDF Destination: $'''X:\\Gestão Contábil\\Pessoal\\%Ano%\\%Mês%\\%NUM%\\Beneficios''' IfFileExists: File.IfExists.Overwrite
+END
+ERROR => Erros
