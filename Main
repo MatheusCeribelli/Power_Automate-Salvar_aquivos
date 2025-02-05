@@ -1,48 +1,102 @@
-Excel.LaunchExcel.LaunchAndOpenUnderExistingProcess Path: $'''X:\\+ Empresas\\+ Escritorio\\Planilha de Informações Gerais\\Empresas - Informações Gerais.xlsb''' Visible: True ReadOnly: False Instance=> ExcelInstance
-IF Domésticas = $'''True''' THEN
-    CALL Doméstica
+# Este fluxo tem o objetivo de automatizar as tarefas de SALVAR arquivos do Depto Pessoal, conforme o nome do arquivo
+Variables.CreateNewList List=> ListaErros
+IF Doméstica = $'''True''' THEN
+    CALL Domésticas
 END
-Excel.SetActiveWorksheet.ActivateWorksheetByName Instance: ExcelInstance Name: $'''Empresas'''
-ON ERROR
-    GOTO Fimm
+IF Doméstica <> $'''True''' THEN
+    Folder.GetFiles Folder: $'''Y:\\++ Matheus Ceribelli\\DP\\%Ano%\\%Mês%\\Empresas''' FileFilter: $'''*.pdf''' IncludeSubfolders: False FailOnAccessDenied: True SortBy1: Folder.SortBy.NoSort SortDescending1: False SortBy2: Folder.SortBy.NoSort SortDescending2: False SortBy3: Folder.SortBy.NoSort SortDescending3: False Files=> Pasta_PDF
+    LOOP FOREACH Arquivo_PDF IN Pasta_PDF
+        Text.SplitText.SplitWithDelimiter Text: Arquivo_PDF CustomDelimiter: $'''(?<=\\w.\\\\)(\\D*)(?=\\s-\\d*)''' IsRegEx: True Result=> Texto_PDF_13
+        Text.SplitText.SplitWithDelimiter Text: Arquivo_PDF CustomDelimiter: $'''(?<=[A-z]\\\\)(\\D*)(?=\\s\\d{2}.\\d{4})''' IsRegEx: True Result=> Texto_PDF
+        Text.ParseText.RegexParseForFirstOccurrence Text: Arquivo_PDF TextToFind: $'''(?<=.*-\\s*)(\\d+)(?=.pdf)''' StartingPosition: 0 IgnoreCase: False Match=> NUM
+        IF Contains(Texto_PDF_13, $'''Darf Unificado 13º Salário''', True) THEN
+            CALL 'DCTFWeb 13º'
+        END
+        IF Contains(Texto_PDF_13, $'''Holerite 13º Salário''', True) THEN
+            CALL 'Folha de Pagamento 13º'
+        END
+        IF Contains(Texto_PDF_13, $'''Extrato 13º Salário''', True) THEN
+            CALL 'Folha de Pagamento 13º'
+        END
+        IF Contains(Texto_PDF_13, $'''Holerite Adto 13º Sal''', True) THEN
+            CALL 'Folha de Pagamento 13º'
+        END
+        IF Contains(Texto_PDF_13, $'''Extrato Adto 13º Sal''', True) THEN
+            CALL 'Folha de Pagamento 13º'
+        END
+        IF Contains(Texto_PDF, $'''Extrato Mensal''', True) THEN
+            CALL 'Folha de Pagamento'
+        END
+        IF Contains(Texto_PDF, $'''Folha Mensal''', True) THEN
+            CALL 'Folha de Pagamento'
+        END
+        IF Contains(Texto_PDF, $'''Recibo de Pagamento''', True) THEN
+            CALL 'Folha de Pagamento'
+        END
+        IF Contains(Texto_PDF, $'''Extrato Adiantamento''', True) THEN
+            CALL 'Folha de Pagamento'
+        END
+        IF Contains(Texto_PDF, $'''Holerite Mensais''', True) THEN
+            CALL 'Folha de Pagamento'
+        END
+        IF Contains(Texto_PDF, $'''Holerite Mensal''', True) THEN
+            CALL 'Folha de Pagamento'
+        END
+        IF Contains(Texto_PDF, $'''Holerite Adiantamento''', True) THEN
+            CALL 'Folha de Pagamento'
+        END
+        IF Contains(Texto_PDF, $'''Contribuição Assistêncial''', True) THEN
+            CALL Benefícios
+        END
+        IF Contains(Texto_PDF, $'''Boleto Beneficio Social''', True) THEN
+            CALL Benefícios
+        END
+        IF Contains(Texto_PDF, $'''Boleto Vale Alimentação''', True) THEN
+            CALL Benefícios
+        END
+        IF Contains(Texto_PDF, $'''Relatório Vale Refeição''', True) THEN
+            CALL Benefícios
+        END
+        IF Contains(Texto_PDF, $'''Relatório Vale Transporte''', True) THEN
+            CALL Benefícios
+        END
+        IF Contains(Texto_PDF, $'''Programação de Férias''', True) THEN
+            CALL 'Outras Informações'
+        END
+        IF Contains(Texto_PDF, $'''Avisos de Vencimentos''', True) THEN
+            CALL 'Outras Informações'
+        END
+        IF Contains(Texto_PDF, $'''Declaracao Completa''', True) THEN
+            CALL DCTFWeb
+        END
+        IF Contains(Texto_PDF_13, $'''Recibo de Entrega DCTFWeb 13º''', True) THEN
+            CALL 'DCTFWeb 13º'
+        END
+        IF Contains(Texto_PDF, $'''Recibo de Entrega DCTFWeb''', True) THEN
+            CALL DCTFWeb
+        END
+        IF Contains(Texto_PDF, $'''Resumo Debitos''', True) THEN
+            CALL DCTFWeb
+        END
+        IF Contains(Texto_PDF, $'''Resumo Creditos''', True) THEN
+            CALL DCTFWeb
+        END
+        IF Contains(Texto_PDF, $'''Darf Unificado''', True) THEN
+            CALL DCTFWeb
+        END
+        IF Contains(Texto_PDF_13, $'''Re FGTS Digital 13º Salário''', True) THEN
+            CALL 'FGTS Digital 13º'
+        END
+        IF Contains(Texto_PDF, $'''Re FGTS Digital''', True) THEN
+            CALL 'FGTS Digital'
+        END
+        IF Contains(Texto_PDF_13, $'''FGTS Digital 13º Salário''', True) THEN
+            CALL 'FGTS Digital 13º'
+        END
+        IF Contains(Texto_PDF, $'''FGTS Digital''', True) THEN
+            CALL 'FGTS Digital'
+        END
+        Variables.AddItemToList Item: Erros List: ListaErros
+        Variables.ClearList List: Erros
+    END
 END
-Folder.GetFiles Folder: $'''Y:\\++ Matheus Ceribelli\\DP\\%Ano%\\%Mes%\\Empresas\\Não Nomeadas''' FileFilter: $'''*.pdf''' IncludeSubfolders: False FailOnAccessDenied: True SortBy1: Folder.SortBy.NoSort SortDescending1: False SortBy2: Folder.SortBy.NoSort SortDescending2: False SortBy3: Folder.SortBy.NoSort SortDescending3: False Files=> Pasta_PDF
-LOOP FOREACH Arquivo_PDF IN Pasta_PDF
-    Text.SplitText.SplitWithDelimiter Text: Arquivo_PDF CustomDelimiter: $'''(?<=\\d\\W)(\\D*)(?=\\s[\\d.\\s]*-)''' IsRegEx: True Result=> TextList
-    Pdf.ExtractTextFromPDF.ExtractText PDFFile: Arquivo_PDF DetectLayout: False ExtractedText=> Texto_PDF
-    IF Contains(Texto_PDF, $'''Guia do FGTS Digital''', True) THEN
-        CALL 'Re FGTS Digital'
-    END
-    IF Contains(Texto_PDF, $'''Relação de Trabalhadores''', True) THEN
-        CALL 'FGTS Digital'
-    END
-    IF Contains(Texto_PDF, $'''PROGRAMAÇÃO DE FÉRIAS''', False) THEN
-        CALL 'Programação de férias'
-    END
-    IF Contains(Texto_PDF, $'''Assinatura do Funcionário''', False) THEN
-        CALL 'Holerite Mensal'
-    END
-    IF Contains(Texto_PDF, $'''EXTRATO MENSAL''', False) THEN
-        CALL 'Extrato Mensal'
-    END
-    IF Contains(Texto_PDF, $'''Recibo de Entrega da Declaração de Débitos e Créditos Tributários Federais Previdenciários - DCTFWeb''', False) THEN
-        CALL 'Recibo de Entrega DCTFWeb'
-    END
-    IF Contains(Texto_PDF, $'''Documento de Arrecadação''', True) THEN
-        CALL 'Darf Unificado'
-    END
-    IF Contains(Texto_PDF, $'''pluxee refeição''', True) THEN
-        CALL 'Relatório vale refeição'
-    END
-    IF Contains(Texto_PDF, $'''pluxee alimentação''', True) THEN
-        CALL 'Relatório vale refeição'
-    END
-    IF Contains(Texto_PDF, $'''pluxee Combustivel''', True) THEN
-        CALL 'Relatório Auxilio Combustivel'
-    END
-    Variables.ClearList List: CNPJ
-    Variables.ClearList List: Codigo
-    Variables.ClearList List: Data
-END
-Excel.CloseExcel.Close Instance: ExcelInstance
-LABEL Fimm
