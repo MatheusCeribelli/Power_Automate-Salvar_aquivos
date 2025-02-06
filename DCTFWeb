@@ -2,6 +2,6 @@ BLOCK
 ON BLOCK ERROR all
 
 END
-    File.Move Files: Arquivo_PDF Destination: $'''X:\\Gestão Contábil\\Pessoal\\%Ano%\\%Mês%\\%NUM%\\- Obrigações Acessórias\\DCTFWeb''' IfFileExists: File.IfExists.Overwrite
+    File.Move Files: Arquivo_PDF Destination: $'''c:\\Pessoal\\%Ano%\\%Mês%\\%NUM%\\DCTFWeb''' IfFileExists: File.IfExists.Overwrite
 END
 ERROR => Erros Reset: True
