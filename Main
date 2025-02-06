@@ -4,7 +4,7 @@ IF Doméstica = $'''True''' THEN
     CALL Domésticas
 END
 IF Doméstica <> $'''True''' THEN
-    Folder.GetFiles Folder: $'''Y:\\++ Matheus Ceribelli\\DP\\%Ano%\\%Mês%\\Empresas''' FileFilter: $'''*.pdf''' IncludeSubfolders: False FailOnAccessDenied: True SortBy1: Folder.SortBy.NoSort SortDescending1: False SortBy2: Folder.SortBy.NoSort SortDescending2: False SortBy3: Folder.SortBy.NoSort SortDescending3: False Files=> Pasta_PDF
+    Folder.GetFiles Folder: $'''c:\\DP\\%Ano%\\%Mês%\\Empresas''' FileFilter: $'''*.pdf''' IncludeSubfolders: False FailOnAccessDenied: True SortBy1: Folder.SortBy.NoSort SortDescending1: False SortBy2: Folder.SortBy.NoSort SortDescending2: False SortBy3: Folder.SortBy.NoSort SortDescending3: False Files=> Pasta_PDF
     LOOP FOREACH Arquivo_PDF IN Pasta_PDF
         Text.SplitText.SplitWithDelimiter Text: Arquivo_PDF CustomDelimiter: $'''(?<=\\w.\\\\)(\\D*)(?=\\s-\\d*)''' IsRegEx: True Result=> Texto_PDF_13
         Text.SplitText.SplitWithDelimiter Text: Arquivo_PDF CustomDelimiter: $'''(?<=[A-z]\\\\)(\\D*)(?=\\s\\d{2}.\\d{4})''' IsRegEx: True Result=> Texto_PDF
